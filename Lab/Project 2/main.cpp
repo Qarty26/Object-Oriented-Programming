@@ -536,12 +536,28 @@ void afisareRacingSport()
 friend istream& operator>>(istream& in, RacingSport &obj);
 friend ostream& operator<<(ostream& out, const RacingSport &obj);
 
-void afisareRacetrack(char racetrack[1000][1000],int n,int m)
+void afisareRacetrack(char racetrack[1000][1000],int n,int m,int player1X,int player1Y,int player2X,int player2Y)
 {
     for(int i=0;i<n;i++)
     {
         for(int j=0;j<m;j++)
-            cout<<racetrack[i][j];
+            if(i==player1X && j==player1Y)
+            {
+                HANDLE  hConsole;
+                hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+                SetConsoleTextAttribute(hConsole,9);
+                cout<<racetrack[i][j];
+                SetConsoleTextAttribute(hConsole,7);
+            }
+            else if(i==player2X && j==player2Y)
+            {
+                HANDLE  hConsole;
+                hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+                SetConsoleTextAttribute(hConsole,4);
+                cout<<racetrack[i][j];
+                SetConsoleTextAttribute(hConsole,7);
+            }
+            else cout<<racetrack[i][j];
         cout<<endl;
     }
 }
@@ -549,8 +565,11 @@ void afisareRacetrack(char racetrack[1000][1000],int n,int m)
 void race()
 {
     int n,m,i,j;
-    int player1X,player1Y,player2X,player3Y;
-    char racetrack[1000][1000],test,underPlayer,choice;
+    int player1X,player1Y,player2X,player2Y;
+    int noLaps;
+    bool runningRace=true;
+    int laps1=0,laps2=0;
+    char racetrack[1000][1000],test,underPlayer1,underPlayer2,choice;
     ifstream in("race1.in");
 
     cout<<"Welcome to the OOP-Ring!"<<endl;
@@ -565,6 +584,9 @@ void race()
 
     in>>n>>m;
     in>>player1X>>player1Y;
+    in>>player2X>>player2Y;
+    in>>noLaps;
+    noLaps=noLaps*2+1;
     in>>noskipws;
     in>>test;
 
@@ -576,62 +598,153 @@ void race()
     }
 
 
-    underPlayer=racetrack[player1X][player1Y];
+    underPlayer1=racetrack[player1X][player1Y];
     racetrack[player1X][player1Y]='>';
 
-afisareRacetrack(racetrack,n,m);
+    underPlayer2=racetrack[player2X][player2Y];
+    racetrack[player2X][player2Y]='>';
 
-while(true)
+afisareRacetrack(racetrack,n,m,player1X,player1Y,player2X,player2Y);
+
+while(laps1<=noLaps || laps2<=noLaps)
 {
-
-
-
-    while(true)
+    while(laps1<=noLaps || laps2<=noLaps)
     {
-        switch(racetrack[player1X][player1Y])
+
+        ///LOOP PLAYER 1
+        if(laps1<=noLaps)
         {
-            case '>':
-                {
-                    racetrack[player1X][player1Y]=underPlayer;
-                    underPlayer=racetrack[player1X][player1Y+1];
-                    player1Y++;
-                    racetrack[player1X][player1Y]='>';
-                    break;
-                }
-            case '<':
-                {
-                    racetrack[player1X][player1Y]=underPlayer;
-                    underPlayer=racetrack[player1X][player1Y-1];
-                    player1Y--;
-                    racetrack[player1X][player1Y]='<';
-                    break;
-                }
-            case '^':
-                {
-                    racetrack[player1X][player1Y]=underPlayer;
-                    underPlayer=racetrack[player1X-1][player1Y];
-                    player1X--;
-                    racetrack[player1X][player1Y]='^';
-                    break;
-                }
-            case 'v':
-                {
-                    racetrack[player1X][player1Y]=underPlayer;
-                    underPlayer=racetrack[player1X+1][player1Y];
-                    player1X++;
-                    racetrack[player1X][player1Y]='v';
-                    break;
-                }
+            switch(racetrack[player1X][player1Y])
+            {
+                case '>':
+                    {
+                        if(player1X==player2X && player1Y+1==player2Y)
+                            break;
+
+                        racetrack[player1X][player1Y]=underPlayer1;
+                        underPlayer1=racetrack[player1X][player1Y+1];
+                        player1Y++;
+                        racetrack[player1X][player1Y]='>';
+                        break;
+
+                    }
+                case '<':
+                    {
+                        if(player1X==player2X && player1Y-1==player2Y)
+                            break;
+
+                        racetrack[player1X][player1Y]=underPlayer1;
+                        underPlayer1=racetrack[player1X][player1Y-1];
+                        player1Y--;
+                        racetrack[player1X][player1Y]='<';
+                        break;
+                    }
+                case '^':
+                    {
+                        if(player1Y==player2Y && player1X-1==player2X)
+                            break;
+
+                        racetrack[player1X][player1Y]=underPlayer1;
+                        underPlayer1=racetrack[player1X-1][player1Y];
+                        player1X--;
+                        racetrack[player1X][player1Y]='^';
+                        break;
+                    }
+                case 'v':
+                    {
+                        if(player1Y==player2Y && player1X+1==player2X)
+                            break;
+
+                        racetrack[player1X][player1Y]=underPlayer1;
+                        underPlayer1=racetrack[player1X+1][player1Y];
+                        player1X++;
+                        racetrack[player1X][player1Y]='v';
+                        break;
+
+                    }
+            }
         }
+
+
+        ///LOOP PLAYER 2
+        if(laps2<=noLaps)
+        {
+            switch(racetrack[player2X][player2Y])
+            {
+                case '>':
+                    {
+                        if(player1X==player2X && player2Y+1==player1Y)
+                            break;
+
+                        racetrack[player2X][player2Y]=underPlayer2;
+                        underPlayer2=racetrack[player2X][player2Y+1];
+                        player2Y++;
+                        racetrack[player2X][player2Y]='>';
+                        break;
+
+                    }
+                case '<':
+                    {
+                        if(player1X==player2X && player2Y-1==player1Y)
+                            break;
+
+                        racetrack[player2X][player2Y]=underPlayer2;
+                        underPlayer2=racetrack[player2X][player2Y-1];
+                        player2Y--;
+                        racetrack[player2X][player2Y]='<';
+                        break;
+
+
+                    }
+                case '^':
+                    {
+                        if(player1Y==player2Y && player2X-1==player1X)
+                            break;
+
+                        racetrack[player2X][player2Y]=underPlayer2;
+                        underPlayer2=racetrack[player2X-1][player2Y];
+                        player2X--;
+                        racetrack[player2X][player2Y]='^';
+                        break;
+
+                    }
+                case 'v':
+                    {
+                        if(player1Y==player2Y && player2X+1==player1X)
+                            break;
+
+                        racetrack[player2X][player2Y]=underPlayer2;
+                        underPlayer2=racetrack[player2X+1][player2Y];
+                        player2X++;
+                        racetrack[player2X][player2Y]='v';
+
+                        break;
+
+                    }
+            }
+        }
+
+        if(underPlayer1=='%')
+        {
+            laps1++;
+        }
+
+        if(underPlayer2=='%')
+        {
+            laps2++;
+        }
+        if(laps1==noLaps && laps2==noLaps)
+            runningRace=false;
         system("CLS");
-        afisareRacetrack(racetrack,n,m);
+        afisareRacetrack(racetrack,n,m,player1X,player1Y,player2X,player2Y);
         if (_kbhit())
         {
             choice = _getch();
-            if (choice == 'w' || choice == 'a' || choice == 's' || choice == 'd' || choice== 'b') {
+            if (choice == 'w' || choice == 'a' || choice == 's' || choice == 'd' || choice == 'i' || choice == 'j' || choice == 'k' || choice == 'l') {
                     break;
                 }
         }
+
     }
 
     switch(choice)
@@ -656,6 +769,30 @@ while(true)
                 racetrack[player1X][player1Y]='>';
                 break;
             }
+
+
+
+        case 'i':
+            {
+                racetrack[player2X][player2Y]='^';
+                break;
+            }
+        case 'j':
+            {
+                racetrack[player2X][player2Y]='<';
+                break;
+            }
+        case 'k':
+            {
+                racetrack[player2X][player2Y]='v';
+                break;
+            }
+        case 'l':
+            {
+                racetrack[player2X][player2Y]='>';
+                break;
+            }
+
 
     }
 }
