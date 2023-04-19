@@ -7,10 +7,9 @@ using namespace std;
 
 class Sports{
 
-private:
-const int IdSport;
-
 protected:
+
+const int IdSport;
 static int contorIdS;
 string sportName;
 bool requireBall;
@@ -33,6 +32,24 @@ Sports(string sportName,bool requireBall,int year, int noMinOfParticipants):IdSp
     this->year=year;
     this->noMinOfParticipants=noMinOfParticipants;
 }
+
+Sports(const Sports &obj):IdSport(obj.IdSport){
+    this->sportName=obj.sportName;
+    this->requireBall=obj.requireBall;
+    this->year=obj.year;
+    this->noMinOfParticipants=obj.noMinOfParticipants;
+}
+///------------------------------------Operator--------------------------------------------------
+Sports& operator =(const Sports& obj)
+{
+    this->sportName=obj.sportName;
+    this->requireBall=obj.requireBall;
+    this->year=obj.year;
+    this->noMinOfParticipants=obj.noMinOfParticipants;
+
+    return *this;
+}
+
 ///--------------------------------------Functions------------------------------------------------
 void printSport()
 {
@@ -47,10 +64,19 @@ void printSport()
 }
 ///-------------------------------------Read-and-print---------------------------------------------
 
-
-
 friend istream& operator>>(istream& in, Sports &obj);
 friend ostream& operator<<(ostream& out, const Sports &obj);
+
+///----------------------------------------Destructor--------------------------------------------------
+
+~Sports(){
+
+    sportName="";
+    requireBall=false;
+    year=0;
+    noMinOfParticipants=0;
+
+}
 
 };
 
@@ -67,7 +93,6 @@ istream& operator >>(istream& in, Sports &obj)
 
     return in;
 }
-
 ostream& operator <<(ostream& out,const Sports &obj)
 {
 
@@ -84,50 +109,61 @@ ostream& operator <<(ostream& out,const Sports &obj)
     return out;
 }
 int Sports::contorIdS=1;
-///__________________________FINISH_SPORTS_____________________________________
+///__________________________FINISH_SPORTS________________________________________________________________________________________________________________________
 
 
-class BallSport:public Sports
+class BallSport: virtual public Sports
 {
-
-    const int idBallSport;
 
 protected:
 
-    const bool requireBallPerm=true;
-    static int contorIdBS;
     string ballType;
     bool armsUsed;
     bool legsUsed;
 
 
 public:
-
-
 ///-----------------------------CONSTRUCTORI--------------------------------------
-BallSport():idBallSport(contorIdBS++)
+BallSport():Sports()
 {
-    Sports();
     requireBall=true;
     ballType="Unsigned type";
     armsUsed=false;
     legsUsed=false;
 }
 
-BallSport(string sportName,int year,int noMinOfParticipants,string ballType,bool armsUsed,bool legsUsed):idBallSport(contorIdBS++)
+BallSport(string sportName,int year,int noMinOfParticipants,string ballType,bool armsUsed,bool legsUsed): Sports(sportName,true,year,noMinOfParticipants)
 {
-    Sports(sportName,true,year,noMinOfParticipants);
     this->ballType=ballType;
     this->armsUsed=armsUsed;
     this->legsUsed=legsUsed;
 }
+
+BallSport(const BallSport& obj):Sports(obj)
+{
+    this->ballType=obj.ballType;
+    this->armsUsed=obj.armsUsed;
+    this->legsUsed=obj.legsUsed;
+}
+///--------------------------------------Operator-----------------------------------------------------
+BallSport& operator = (const BallSport &obj)
+{
+    if(this!=&obj)
+    {
+        Sports::operator=(obj);
+        this->ballType=obj.ballType;
+        this->armsUsed=obj.armsUsed;
+        this->legsUsed=obj.legsUsed;
+    }
+
+}
 ///---------------------------------------FUNCTII------------------------------------------------------
 void afisareBallSport()
 {
-    cout<<"Id: "<<idBallSport<<endl;
+    cout<<"Id: "<<IdSport<<endl;
     cout<<"Sport name: "<<sportName<<endl;
     cout<<"Ball required: ";
-    if (requireBallPerm==true)
+    if (requireBall==true)
         cout<<"Yes"<<endl;
     else cout<<"No"<<endl;
 
@@ -434,7 +470,17 @@ void football()
 friend istream& operator>>(istream& in, BallSport &obj);
 friend ostream& operator<<(ostream& out, const BallSport &obj);
 
+///----------------------------------------Destructor---------------------------------------------------
+virtual ~BallSport()
+{
+    //~Sports();
+    ballType="";
+    armsUsed=false;
+    legsUsed=false;
+
+}
 };
+
 istream& operator >>(istream& in, BallSport &obj)
 {
     in>>(Sports&)obj;
@@ -450,7 +496,6 @@ istream& operator >>(istream& in, BallSport &obj)
 
     return in;
 }
-
 ostream& operator <<(ostream& out,const BallSport &obj)
 {
     out<<(Sports&)obj;
@@ -469,17 +514,13 @@ ostream& operator <<(ostream& out,const BallSport &obj)
     return out;
 }
 
-int BallSport::contorIdBS=1;
-///__________________________________FINISH_BALL-SPORTS_________________________________
+///__________________________________FINISH_BALL-SPORTS_______________________________________________________________________________________________________
 
-class RacingSport:public Sports
+class RacingSport:virtual public Sports
 {
-    const int idRacingSport;
 
 protected:
 
-    const bool requireBallPerm2=false;
-    static int contorIdRS;
     int noWheels;
     string surfaceType;
     string raceType; ///time attack, lap, sprint, drag, etc
@@ -489,36 +530,48 @@ protected:
 public:
 
 ///---------------------------------constructors--------------------------------------------------
-RacingSport():idRacingSport(contorIdRS++)
+RacingSport():Sports()
 {
-    sportName="Unknown name";
-    year=-1;
-    noMinOfParticipants=-1;
+
     noWheels=-1;
     surfaceType="Unknown surface";
     raceType="Unknown type";
     openWheel=false;
+    requireBall=false;
+
 }
 
-RacingSport(string sportName,int year,int noMinOfParticipants,int noWheels,string surfaceType,string raceType,bool openWheel):idRacingSport(contorIdRS++)
+RacingSport(string sportName,int year,int noMinOfParticipants,int noWheels,string surfaceType,string raceType,bool openWheel):Sports(sportName,false,year,noMinOfParticipants)
 {
-    this->sportName=sportName;
-    this->year=year;
-    this->noMinOfParticipants=noMinOfParticipants;
     this->noWheels=noWheels;
     this->surfaceType=surfaceType;
     this->raceType=raceType;
     this->openWheel=openWheel;
 }
 
+RacingSport(const RacingSport &obj):Sports(obj)
+{
+    this->noWheels=obj.noWheels;
+    this->surfaceType=obj.surfaceType;
+    this->raceType=obj.raceType;
+    this->openWheel=obj.openWheel;
+}
+///-----------------------------------operators---------------------------------------------
+
+RacingSport& operator=(const RacingSport &obj)
+{
+    this->noWheels=obj.noWheels;
+    this->surfaceType=obj.surfaceType;
+    this->raceType=obj.raceType;
+    this->openWheel=obj.openWheel;
+}
 ///-----------------------------------functions--------------------------------------------
 
 void afisareRacingSport()
 {
-    cout<<"Id: "<<idRacingSport<<endl;
     cout<<"Sport name: "<<sportName<<endl;
     cout<<"Ball required: ";
-    if (requireBallPerm2==true)
+    if (requireBall==true)
         cout<<"Yes"<<endl;
     else cout<<"No"<<endl;
 
@@ -569,6 +622,8 @@ void race()
     int noLaps;
     bool runningRace=true;
     int laps1=0,laps2=0;
+    int st=0,nd=0;
+    bool slowdown=false;
     char racetrack[1000][1000],test,underPlayer1,underPlayer2,choice;
     ifstream in("race1.in");
 
@@ -625,6 +680,7 @@ while(laps1<=noLaps || laps2<=noLaps)
                         underPlayer1=racetrack[player1X][player1Y+1];
                         player1Y++;
                         racetrack[player1X][player1Y]='>';
+
                         break;
 
                     }
@@ -727,14 +783,28 @@ while(laps1<=noLaps || laps2<=noLaps)
         if(underPlayer1=='%')
         {
             laps1++;
+            if(laps1==noLaps)
+                {
+                    if(st==0)
+                        st=1;
+                    else
+                        nd=1;
+                }
+
         }
 
         if(underPlayer2=='%')
         {
             laps2++;
+            if(laps2==noLaps)
+                {
+                    if(st==0)
+                        st=2;
+                    else
+                        nd=2;
+                }
         }
-        if(laps1==noLaps && laps2==noLaps)
-            runningRace=false;
+
         system("CLS");
         afisareRacetrack(racetrack,n,m,player1X,player1Y,player2X,player2Y);
         if (_kbhit())
@@ -797,21 +867,27 @@ while(laps1<=noLaps || laps2<=noLaps)
     }
 }
 
+cout<<"Player "<<st<<" finished first!"<<endl;
+cout<<"Player "<<nd<<", better luck next time!"<<endl;
 
 
 
+}
 
+///------------------------------------destructor
+virtual ~RacingSport()
+{
+    noWheels=0;
+    surfaceType="";
+    raceType="";
+    openWheel=false;
 }
 };
 
 istream& operator >>(istream& in, RacingSport &obj)
 {
-    cout<<"Sport name: ";
-    in>>obj.sportName;
-    cout<<"First played in: ";
-    in>>obj.year;
-    cout<<"Minimum number of participants: ";
-    in>>obj.noMinOfParticipants;
+    in>>(Sports&)obj;
+    obj.requireBall=false;
     //---
     cout<<"Number of wheels: ";
     in>>obj.noWheels;
@@ -822,18 +898,9 @@ istream& operator >>(istream& in, RacingSport &obj)
     cout<<"Open wheel: ";
     in>>obj.openWheel;
 }
-
 ostream& operator <<(ostream& out,const RacingSport &obj)
 {
-    out<<endl;
-    out<<"Id: "<<obj.idRacingSport<<endl;
-    out<<"Sport name: "<<obj.sportName<<endl;
-    out<<"Ball required: ";
-    if (obj.requireBallPerm2==true)
-        out<<"Yes"<<endl;
-    else out<<"No"<<endl;
-    out<<"First played in: "<<obj.year<<endl;
-    out<<"Minimum number of participants: "<<obj.noMinOfParticipants<<endl;
+    out<<(Sports&)obj;
     //---
     out<<"Number of wheels: "<<obj.noWheels<<endl;
     out<<"Surface type: "<<obj.surfaceType<<endl;
@@ -842,31 +909,79 @@ ostream& operator <<(ostream& out,const RacingSport &obj)
     if (obj.openWheel==true)
         out<<"Yes"<<endl;
     else out<<"No"<<endl;
-    out<<endl;
 
     return out;
 }
-int RacingSport::contorIdRS=1;
 
+
+
+
+class RocketLeague: public RacingSport,public BallSport
+{
+
+    bool reverseAllowed;
+
+
+
+public:
+    RocketLeague()
+    {
+        RacingSport();
+        BallSport();
+    }
+
+        RocketLeague(string sportName,int year,int noMinOfParticipants,string ballType,bool armsUsed,bool legsUsed,int noWheels,string surfaceType,string raceType,bool openWheel,bool reverseAllowed):
+            BallSport(sportName,year,noMinOfParticipants,ballType,armsUsed,legsUsed),
+            RacingSport(sportName,year,noMinOfParticipants,noWheels,surfaceType,raceType,openWheel)
+    {
+        this->reverseAllowed=reverseAllowed;
+    }
+
+friend istream& operator>>(istream& in, RocketLeague &obj);
+friend ostream& operator<<(ostream& out, const RocketLeague &obj);
+};
+
+istream& operator >>(istream& in, RocketLeague &obj)
+{
+    in>>(RacingSport&)obj;
+    cout<<"Ball type: ";
+    in>>obj.ballType;
+    cout<<"Played with arms: ";
+    in>>obj.armsUsed;
+    cout<<"Played with legs: ";
+    in>>obj.legsUsed;
+}
+ostream& operator <<(ostream& out,const RocketLeague &obj)
+{
+    out<<(RacingSport&)obj;
+    out<<"Ball type: "<<obj.ballType<<endl;
+    out<<"Played with arms: ";
+    if (obj.armsUsed==true)
+        out<<"Yes"<<endl;
+    else out<<"No"<<endl;
+
+    out<<"Played with legs: ";
+    if (obj.legsUsed==true)
+        out<<"Yes"<<endl;
+    else out<<"No"<<endl;
+
+
+
+    return out;
+}
 int main()
 {
-RacingSport r;
 
-r.race();
+Sports s1;
+BallSport s2;
+BallSport s3("fotbal",1900,2,"round",0,1);
+cout<<s2<<s3;
+
+s2=s3;
+
+cout<<s2;
 
 
-
-    ///IDEI
-
-    /*
-    Main class: sport
-
-    side class: racing sport
-    side class: fotbal
-
-    bottom class: fotbal cu masini
-
-    */
     return 0;
 
 }
