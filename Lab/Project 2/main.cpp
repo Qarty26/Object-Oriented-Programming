@@ -924,10 +924,12 @@ class RocketLeague: public RacingSport,public BallSport
 
 
 public:
-    RocketLeague()
+
+
+///-------------------------Constructors-------------------------------------------------------------------------------------------------
+    RocketLeague():RacingSport(),BallSport()
     {
-        RacingSport();
-        BallSport();
+        reverseAllowed=false;
     }
 
         RocketLeague(string sportName,int year,int noMinOfParticipants,string ballType,bool armsUsed,bool legsUsed,int noWheels,string surfaceType,string raceType,bool openWheel,bool reverseAllowed):
@@ -937,50 +939,50 @@ public:
         this->reverseAllowed=reverseAllowed;
     }
 
+///--------------------------------citire-afisare-------------------------------------------------------------------------------------------
 friend istream& operator>>(istream& in, RocketLeague &obj);
 friend ostream& operator<<(ostream& out, const RocketLeague &obj);
 };
 
 istream& operator >>(istream& in, RocketLeague &obj)
 {
-    in>>(RacingSport&)obj;
-    cout<<"Ball type: ";
-    in>>obj.ballType;
-    cout<<"Played with arms: ";
-    in>>obj.armsUsed;
-    cout<<"Played with legs: ";
-    in>>obj.legsUsed;
+    in>>(BallSport&)obj;
+    cout<<"Number of wheels: ";
+    in>>obj.noWheels;
+    cout<<"Surface type: ";
+    in>>obj.surfaceType;
+    cout<<"Race type: ";
+    in>>obj.raceType;
+    cout<<"Open wheel: ";
+    in>>obj.openWheel;
+    cout<<"Reversed allowed: ";
+    in>>obj.reverseAllowed;
 }
 ostream& operator <<(ostream& out,const RocketLeague &obj)
 {
-    out<<(RacingSport&)obj;
-    out<<"Ball type: "<<obj.ballType<<endl;
-    out<<"Played with arms: ";
-    if (obj.armsUsed==true)
+    out<<(BallSport&)obj;
+    out<<"Number of wheels: "<<obj.noWheels<<endl;
+    out<<"Surface type: "<<obj.surfaceType<<endl;
+    out<<"Race type: "<<obj.raceType<<endl;
+    out<<"Open wheel: ";
+    if (obj.openWheel==true)
         out<<"Yes"<<endl;
     else out<<"No"<<endl;
 
-    out<<"Played with legs: ";
-    if (obj.legsUsed==true)
+    out<<"Reversed allowed: ";
+    if (obj.reverseAllowed==true)
         out<<"Yes"<<endl;
     else out<<"No"<<endl;
-
-
 
     return out;
 }
 int main()
 {
 
-Sports s1;
-BallSport s2;
-BallSport s3("fotbal",1900,2,"round",0,1);
-cout<<s2<<s3;
-
-s2=s3;
-
-cout<<s2;
-
+    RocketLeague r;
+    cout<<r<<endl;
+    cin>>r;
+    cout<<endl<<r;
 
     return 0;
 
