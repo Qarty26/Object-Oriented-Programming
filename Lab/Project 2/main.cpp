@@ -5,7 +5,15 @@
 #include <windows.h>
 using namespace std;
 
-class Sports{
+
+class IOinterface{
+public:
+    virtual istream& citire(istream&) = 0;
+    virtual ostream& afisare(ostream&) const = 0;
+};
+
+
+class Sports: public IOinterface{
 
 protected:
 
@@ -17,7 +25,11 @@ int year;
 int noMinOfParticipants;
 
 public:
-
+///-----------------------------------Getter----------------------------------------------------
+int GetId()
+{
+    return this->IdSport;
+}
 ///------------------------------------Constructors----------------------------------------------
 Sports():IdSport(contorIdS++){
     sportName="Unknown name";
@@ -67,6 +79,34 @@ void printSport()
 friend istream& operator>>(istream& in, Sports &obj);
 friend ostream& operator<<(ostream& out, const Sports &obj);
 
+
+istream& citire(istream& in)
+{
+    cout<<"Sport name: ";
+    in>>this->sportName;
+    cout<<"Ball required: ";
+    in>>this->requireBall;
+    cout<<"First played in: ";
+    in>>this->year;
+    cout<<"Minimum number of participants: ";
+    in>>this->noMinOfParticipants;
+
+    return in;
+}
+
+ostream& afisare (ostream& out) const{
+
+    out<<"Id: "<<this->IdSport<<endl;
+    out<<"Sport name: "<<this->sportName<<endl;
+    out<<"Ball required: ";
+    if (this->requireBall==true)
+        out<<"Yes"<<endl;
+    else out<<"No"<<endl;
+    out<<"First played in: "<<this->year<<endl;
+    out<<"Minimum number of participants: "<<this->noMinOfParticipants<<endl;
+
+    return out;
+}
 ///----------------------------------------Destructor--------------------------------------------------
 
 ~Sports(){
@@ -156,6 +196,7 @@ BallSport& operator = (const BallSport &obj)
         this->legsUsed=obj.legsUsed;
     }
 
+    return *(this);
 }
 ///---------------------------------------FUNCTII------------------------------------------------------
 void afisareBallSport()
@@ -470,6 +511,36 @@ void football()
 friend istream& operator>>(istream& in, BallSport &obj);
 friend ostream& operator<<(ostream& out, const BallSport &obj);
 
+istream& citire(istream& in)
+{
+    Sports::citire(in);
+    cout<<"Ball type: ";
+    in>>this->ballType;
+    cout<<"Played with arms: ";
+    in>>this->armsUsed;
+    cout<<"Played with legs: ";
+    in>>this->legsUsed;
+
+    return in;
+}
+
+ostream& afisare(ostream& out) const{
+
+    Sports::afisare(out);
+    out<<"Ball type: "<<this->ballType<<endl;
+    out<<"Played with arms: ";
+    if (this->armsUsed==true)
+        out<<"Yes"<<endl;
+    else out<<"No"<<endl;
+
+    out<<"Played with legs: ";
+    if (this->legsUsed==true)
+        out<<"Yes"<<endl;
+    else out<<"No"<<endl;
+
+    return out;
+}
+
 ///----------------------------------------Destructor---------------------------------------------------
 virtual ~BallSport()
 {
@@ -564,6 +635,8 @@ RacingSport& operator=(const RacingSport &obj)
     this->surfaceType=obj.surfaceType;
     this->raceType=obj.raceType;
     this->openWheel=obj.openWheel;
+
+    return *this;
 }
 ///-----------------------------------functions--------------------------------------------
 
@@ -586,8 +659,6 @@ void afisareRacingSport()
     else cout<<"No"<<endl;
 
 }
-friend istream& operator>>(istream& in, RacingSport &obj);
-friend ostream& operator<<(ostream& out, const RacingSport &obj);
 
 void afisareRacetrack(char racetrack[1000][1000],int n,int m,int player1X,int player1Y,int player2X,int player2Y)
 {
@@ -874,7 +945,40 @@ cout<<"Player "<<nd<<", better luck next time!"<<endl;
 
 }
 
-///------------------------------------destructor
+///--------------------------------------citire-afisare--------------------------------------
+friend istream& operator>>(istream& in, RacingSport &obj);
+friend ostream& operator<<(ostream& out, const RacingSport &obj);
+
+ifstream& citire(ifstream& in)
+{
+    Sports::citire(in);
+    cout<<"Number of wheels: ";
+    in>>this->noWheels;
+    cout<<"Surface type: ";
+    in>>this->surfaceType;
+    cout<<"Race type: ";
+    in>>this->raceType;
+    cout<<"Open wheel: ";
+    in>>this->openWheel;
+
+    return in;
+}
+
+ostream& afisare(ostream& out) const{
+
+    Sports::afisare(out);
+    out<<"Number of wheels: "<<this->noWheels<<endl;
+    out<<"Surface type: "<<this->surfaceType<<endl;
+    out<<"Race type: "<<this->raceType<<endl;
+    out<<"Open wheel: ";
+    if (this->openWheel==true)
+        out<<"Yes"<<endl;
+    else out<<"No"<<endl;
+
+    return out;
+}
+
+///------------------------------------destructor--------------------------------------------------
 virtual ~RacingSport()
 {
     noWheels=0;
@@ -897,6 +1001,8 @@ istream& operator >>(istream& in, RacingSport &obj)
     in>>obj.raceType;
     cout<<"Open wheel: ";
     in>>obj.openWheel;
+
+    return in;
 }
 ostream& operator <<(ostream& out,const RacingSport &obj)
 {
@@ -916,7 +1022,7 @@ ostream& operator <<(ostream& out,const RacingSport &obj)
 
 
 
-class RocketLeague: public RacingSport,public BallSport
+class RocketLeague: public RacingSport, public BallSport
 {
 
     bool reverseAllowed;
@@ -930,18 +1036,70 @@ public:
     RocketLeague():RacingSport(),BallSport()
     {
         reverseAllowed=false;
+        this->requireBall=true;
     }
 
-        RocketLeague(string sportName,int year,int noMinOfParticipants,string ballType,bool armsUsed,bool legsUsed,int noWheels,string surfaceType,string raceType,bool openWheel,bool reverseAllowed):
+    RocketLeague(string sportName,int year,int noMinOfParticipants,string ballType,bool armsUsed,bool legsUsed,int noWheels,string surfaceType,string raceType,bool openWheel,bool reverseAllowed):
             BallSport(sportName,year,noMinOfParticipants,ballType,armsUsed,legsUsed),
             RacingSport(sportName,year,noMinOfParticipants,noWheels,surfaceType,raceType,openWheel)
     {
         this->reverseAllowed=reverseAllowed;
+        this->requireBall=true;
     }
+
+    RocketLeague(RocketLeague& obj):RacingSport(obj),BallSport(obj)
+    {
+        this->reverseAllowed=obj.reverseAllowed;
+        this->requireBall=true;
+    }
+
 
 ///--------------------------------citire-afisare-------------------------------------------------------------------------------------------
 friend istream& operator>>(istream& in, RocketLeague &obj);
 friend ostream& operator<<(ostream& out, const RocketLeague &obj);
+
+istream& citire(istream& in)
+{
+    BallSport::citire(in);
+    cout<<"Number of wheels: ";
+    in>>this->noWheels;
+    cout<<"Surface type: ";
+    in>>this->surfaceType;
+    cout<<"Race type: ";
+    in>>this->raceType;
+    cout<<"Open wheel: ";
+    in>>this->openWheel;
+    cout<<"Reversed allowed: ";
+    in>>this->reverseAllowed;
+
+    return in;
+}
+
+ostream& afisare(ostream& out) const
+{
+    BallSport::afisare(out);
+    out<<"Number of wheels: "<<this->noWheels<<endl;
+    out<<"Surface type: "<<this->surfaceType<<endl;
+    out<<"Race type: "<<this->raceType<<endl;
+    out<<"Open wheel: ";
+    if (this->openWheel==true)
+        out<<"Yes"<<endl;
+    else out<<"No"<<endl;
+
+    out<<"Reversed allowed: ";
+    if (this->reverseAllowed==true)
+        out<<"Yes"<<endl;
+    else out<<"No"<<endl;
+
+    return out;
+
+}
+
+///----------------------------------------destructor----------------------------------------------------------
+~RocketLeague()
+{
+    reverseAllowed=false;
+}
 };
 
 istream& operator >>(istream& in, RocketLeague &obj)
@@ -957,6 +1115,8 @@ istream& operator >>(istream& in, RocketLeague &obj)
     in>>obj.openWheel;
     cout<<"Reversed allowed: ";
     in>>obj.reverseAllowed;
+
+    return in;
 }
 ostream& operator <<(ostream& out,const RocketLeague &obj)
 {
@@ -976,13 +1136,95 @@ ostream& operator <<(ostream& out,const RocketLeague &obj)
 
     return out;
 }
+
+class SportList
+{
+    Sports* sports;
+    double cota;
+
+public:
+
+    friend istream& operator>>(istream& in, SportList& obj)
+    {
+        cout<<"What type of sport do you wanna add?"<<endl;
+        cout<<"1->Basic Sport  2->Ball Sport  3->Racing Sport  4->Racing Ball Sport"<<endl;
+        int choice;
+        cin>>choice;
+        if(choice==1)
+            obj.sports = new Sports();
+        else if(choice==2)
+            obj.sports = new BallSport();
+        else if(choice==3)
+            obj.sports = new RacingSport();
+        else if(choice==4)
+            obj.sports = new RocketLeague();
+
+        in>>*obj.sports;
+        cout<<"Cota: ";
+        in>>obj.cota;
+
+        return in;
+    }
+
+    friend ostream& operator<<(ostream& out, const SportList& obj)
+    {
+        out<<*obj.sports;
+        out<<"Cota: "<<obj.cota<<endl;
+
+        return out;
+    }
+
+    Sports* GetSport(){
+        return this->sports;
+    }
+};
+
+
+class BettingHouse
+{
+
+    vector<Sports*> games;
+    vector<SportList> listofSports;
+
+public:
+    void addList()
+    {
+        SportList sport;
+        cin>>sport;
+        listofSports.push_back(sport);
+    }
+
+    void showList()
+    {
+        for(int i=0;i<listofSports.size();i++)
+            cout<<listofSports[i]<<endl;
+    }
+
+    void addGame()
+    {
+        int id_choice;
+        cout<<"Choose the sport by id:"<<endl;
+        cin>>id_choice;
+
+        for(int i=0;i<listofSports.size();i++)
+            if(listofSports[i].GetSport()->GetId()==id_choice)
+            {
+                games.push_back(listofSports[i].GetSport());
+                break;
+            }
+    }
+
+    void showGame()
+    {
+        for(int i=0;i<games.size();i++)
+            cout<<*games[i]<<endl;
+    }
+
+};
+
 int main()
 {
 
-    RocketLeague r;
-    cout<<r<<endl;
-    cin>>r;
-    cout<<endl<<r;
 
     return 0;
 
