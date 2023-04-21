@@ -1024,13 +1024,15 @@ ostream& operator <<(ostream& out,const RacingSport &obj)
 
 class RocketLeague: public RacingSport, public BallSport
 {
-
     bool reverseAllowed;
 
-
-
 public:
+///---------------------------Setter------------------------------------------------------------------
 
+void setReverseAllowed(bool reverseAllowed)
+{
+    this->reverseAllowed=reverseAllowed;
+}
 
 ///-------------------------Constructors-------------------------------------------------------------------------------------------------
     RocketLeague():RacingSport(),BallSport()
@@ -1053,7 +1055,6 @@ public:
         this->requireBall=true;
     }
 
-
 ///--------------------------------citire-afisare-------------------------------------------------------------------------------------------
 friend istream& operator>>(istream& in, RocketLeague &obj);
 friend ostream& operator<<(ostream& out, const RocketLeague &obj);
@@ -1074,7 +1075,6 @@ istream& citire(istream& in)
 
     return in;
 }
-
 ostream& afisare(ostream& out) const
 {
     BallSport::afisare(out);
@@ -1094,6 +1094,697 @@ ostream& afisare(ostream& out) const
     return out;
 
 }
+///-------------------------------------JOCULET---------------------------------------------------------------------------------------------
+
+void afisareTrack(char track[100][100],int n,int m,int player1X,int player1Y,int player2X,int player2Y,int ballX,int ballY)
+{
+    for(int i=0;i<n;i++)
+    {
+        for(int j=0;j<m;j++)
+            if(i==player1X && j==player1Y)
+            {
+                HANDLE  hConsole;
+                hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+                SetConsoleTextAttribute(hConsole,9);
+                cout<<track[i][j];
+                SetConsoleTextAttribute(hConsole,7);
+            }
+            else if(i==player2X && j==player2Y)
+            {
+                HANDLE  hConsole;
+                hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+                SetConsoleTextAttribute(hConsole,4);
+                cout<<track[i][j];
+                SetConsoleTextAttribute(hConsole,7);
+            }
+            else if(i==ballX && j==ballY)
+            {
+                HANDLE  hConsole;
+                hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+                SetConsoleTextAttribute(hConsole,2);
+                cout<<track[i][j];
+                SetConsoleTextAttribute(hConsole,7);
+            }
+            else cout<<track[i][j];
+        cout<<endl;
+    }
+}
+
+void RL()
+{
+    int n,m,i,j;
+    int player1X,player1Y,player2X,player2Y,ballX,ballY;
+    bool runningRace=true;
+    int score1=0,score2=0;
+    int maxScore;
+    int st=0,nd=0;
+    char track[100][100],test,underPlayer1,underPlayer2,underBall,choice;
+    ifstream in("rocketleague.in");
+
+
+    cout<<"Press any key to start!"<<endl;
+    test=getch();
+    system("CLS");
+
+
+    in>>n>>m;
+    in>>player1X>>player1Y;
+    in>>player2X>>player2Y;
+    in>>ballX>>ballY;
+    in>>maxScore;
+    in>>noskipws;
+    in>>test;
+
+    for(i=0;i<n;i++)
+    {
+        for(j=0;j<m;j++)
+            in>>track[i][j];
+        in>>test;
+    }
+
+    underPlayer1=track[player1X][player1Y];
+    underPlayer2=track[player2X][player2Y];
+    underBall=track[ballX][ballY];
+    track[player1X][player1Y]='>';
+    track[player2X][player2Y]='<';
+    track[ballX][ballY]='O';
+
+    afisareTrack(track,n,m,player1X,player1Y,player2X,player2Y,ballX,ballY);
+
+
+    while(score1<maxScore && score2<maxScore)
+    {
+        choice=getch();
+        system("CLS");
+        switch(choice)
+        {
+        ///player1
+        case 'w':
+            {
+                switch(track[player1X][player1Y])
+                {
+                case '>':
+                    {
+                        if((player1X==player2X && player1Y+1==player2Y) ||(player1X==player2X && player1Y+2==player2Y && player1X==ballX && player1Y+1==ballY))
+                            break;
+
+                        if(track[player1X][player1Y+1]=='O')
+                        {
+                            track[player1X][player1Y]=underPlayer1;
+                            player1Y++;
+                            underPlayer1=underBall;
+                            track[player1X][player1Y]='>';
+                            ballY++;
+                            underBall=track[ballX][ballY];
+                            track[ballX][ballY]='O';
+                        }
+                        else
+                        {
+                            track[player1X][player1Y]=underPlayer1;
+                            player1Y++;
+                            underPlayer1=track[player1X][player1Y];
+                            track[player1X][player1Y]='>';
+                        }
+
+                        break;
+                    }
+
+
+                case '<':
+                    {
+                        if((player1X==player2X && player1Y-1==player2Y) ||(player1X==player2X && player1Y-2==player2Y && player1X==ballX && player1Y-1==ballY))
+                            break;
+
+                        if(track[player1X][player1Y-1]=='O')
+                        {
+                            track[player1X][player1Y]=underPlayer1;
+                            player1Y--;
+                            underPlayer1=underBall;
+                            track[player1X][player1Y]='<';
+                            ballY--;
+                            underBall=track[ballX][ballY];
+                            track[ballX][ballY]='O';
+                        }
+                        else
+                        {
+                            track[player1X][player1Y]=underPlayer1;
+                            player1Y--;
+                            underPlayer1=track[player1X][player1Y];
+                            track[player1X][player1Y]='<';
+                        }
+
+                        break;
+                    }
+
+                case '^':
+                    {
+                        if((player1Y==player2Y && player1X-1==player2X) ||(player1Y==player2Y && player1X-2==player2X && player1Y==ballY && player1X-1==ballX))
+                            break;
+
+                        if(track[player1X-1][player1Y]=='O')
+                        {
+                            track[player1X][player1Y]=underPlayer1;
+                            player1X--;
+                            underPlayer1=underBall;
+                            track[player1X][player1Y]='^';
+                            ballX--;
+                            underBall=track[ballX][ballY];
+                            track[ballX][ballY]='O';
+                        }
+                        else
+                        {
+                            track[player1X][player1Y]=underPlayer1;
+                            player1X--;
+                            underPlayer1=track[player1X][player1Y];
+                            track[player1X][player1Y]='^';
+                        }
+
+                        break;
+                    }
+
+                case 'v':
+                    {
+                        if((player1Y==player2Y && player1X+1==player2X) ||(player1Y==player2Y && player1X+2==player2X && player1Y==ballY && player1X+1==ballX))
+                            break;
+
+                        if(track[player1X+1][player1Y]=='O')
+                        {
+                            track[player1X][player1Y]=underPlayer1;
+                            player1X++;
+                            underPlayer1=underBall;
+                            track[player1X][player1Y]='v';
+                            ballX++;
+                            underBall=track[ballX][ballY];
+                            track[ballX][ballY]='O';
+                        }
+                        else
+                        {
+                            track[player1X][player1Y]=underPlayer1;
+                            player1X++;
+                            underPlayer1=track[player1X][player1Y];
+                            track[player1X][player1Y]='v';
+                        }
+
+                        break;
+                    }
+                }
+
+                break;
+            }
+
+        case 's':
+            {
+                if(reverseAllowed==false)
+                    break;
+
+                switch(track[player1X][player1Y])
+                {
+                case '>':
+                    {
+                        if((player1X==player2X && player1Y-1==player2Y) ||(player1X==player2X && player1Y-2==player2Y && player1X==ballX && player1Y-1==ballY))
+                            break;
+
+                        if(track[player1X][player1Y-1]=='O')
+                        {
+                            track[player1X][player1Y]=underPlayer1;
+                            player1Y--;
+                            underPlayer1=underBall;
+                            track[player1X][player1Y]='>';
+                            ballY--;
+                            underBall=track[ballX][ballY];
+                            track[ballX][ballY]='O';
+                        }
+                        else
+                        {
+                            track[player1X][player1Y]=underPlayer1;
+                            player1Y--;
+                            underPlayer1=track[player1X][player1Y];
+                            track[player1X][player1Y]='>';
+                        }
+
+                        break;
+
+                    }
+
+
+                case '<':
+                    {
+                        if((player1X==player2X && player1Y+1==player2Y) ||(player1X==player2X && player1Y+2==player2Y && player1X==ballX && player1Y+1==ballY))
+                            break;
+
+                        if(track[player1X][player1Y+1]=='O')
+                        {
+                            track[player1X][player1Y]=underPlayer1;
+                            player1Y++;
+                            underPlayer1=underBall;
+                            track[player1X][player1Y]='<';
+                            ballY++;
+                            underBall=track[ballX][ballY];
+                            track[ballX][ballY]='O';
+                        }
+                        else
+                        {
+                            track[player1X][player1Y]=underPlayer1;
+                            player1Y++;
+                            underPlayer1=track[player1X][player1Y];
+                            track[player1X][player1Y]='<';
+                        }
+
+                        break;
+                    }
+
+                case '^':
+                    {
+                        if((player1Y==player2Y && player1X+1==player2X) ||(player1Y==player2Y && player1X+2==player2X && player1Y==ballY && player1X+1==ballX))
+                            break;
+
+                        if(track[player1X+1][player1Y]=='O')
+                        {
+                            track[player1X][player1Y]=underPlayer1;
+                            player1X++;
+                            underPlayer1=underBall;
+                            track[player1X][player1Y]='^';
+                            ballX++;
+                            underBall=track[ballX][ballY];
+                            track[ballX][ballY]='O';
+                        }
+                        else
+                        {
+                            track[player1X][player1Y]=underPlayer1;
+                            player1X++;
+                            underPlayer1=track[player1X][player1Y];
+                            track[player1X][player1Y]='^';
+                        }
+
+                        break;
+                    }
+
+                case 'v':
+                    {
+                        if((player1Y==player2Y && player1X-1==player2X) ||(player1Y==player2Y && player1X-2==player2X && player1Y==ballY && player1X-1==ballX))
+                            break;
+
+                        if(track[player1X-1][player1Y]=='O')
+                        {
+                            track[player1X][player1Y]=underPlayer1;
+                            player1X--;
+                            underPlayer1=underBall;
+                            track[player1X][player1Y]='v';
+                            ballX--;
+                            underBall=track[ballX][ballY];
+                            track[ballX][ballY]='O';
+                        }
+                        else
+                        {
+                            track[player1X][player1Y]=underPlayer1;
+                            player1X--;
+                            underPlayer1=track[player1X][player1Y];
+                            track[player1X][player1Y]='v';
+                        }
+
+
+                        break;
+                    }
+                }
+
+                break;
+            }
+
+        case 'a':
+            {
+                if(track[player1X][player1Y]=='^')
+                    track[player1X][player1Y]='<';
+
+                else if(track[player1X][player1Y]=='<')
+                    track[player1X][player1Y]='v';
+
+                else if(track[player1X][player1Y]=='v')
+                    track[player1X][player1Y]='>';
+
+                else if(track[player1X][player1Y]=='>')
+                    track[player1X][player1Y]='^';
+
+                break;
+            }
+
+        case 'd':
+            {
+                if(track[player1X][player1Y]=='^')
+                    track[player1X][player1Y]='>';
+
+                else if(track[player1X][player1Y]=='<')
+                    track[player1X][player1Y]='^';
+
+                else if(track[player1X][player1Y]=='v')
+                    track[player1X][player1Y]='<';
+
+                else if(track[player1X][player1Y]=='>')
+                    track[player1X][player1Y]='v';
+
+                break;
+            }
+
+
+        case 'i':
+            {
+                switch(track[player2X][player2Y])
+                {
+                case '>':
+                    {
+                        if((player2X==player1X && player2Y+1==player1Y) ||(player2X==player1X && player2Y+2==player1Y && player2X==ballX && player2Y+1==ballY))
+                            break;
+
+                        if(track[player2X][player2Y+1]=='O')
+                        {
+                            track[player2X][player2Y]=underPlayer2;
+                            player2Y++;
+                            underPlayer2=underBall;
+                            track[player2X][player2Y]='>';
+                            ballY++;
+                            underBall=track[ballX][ballY];
+                            track[ballX][ballY]='O';
+                        }
+                        else
+                        {
+                            track[player2X][player2Y]=underPlayer2;
+                            player2Y++;
+                            underPlayer2=track[player2X][player2Y];
+                            track[player2X][player2Y]='>';
+                        }
+
+                        break;
+                    }
+
+
+                case '<':
+                    {
+                        if((player2X==player1X && player2Y-1==player1Y) ||(player2X==player1X && player2Y-2==player1Y && player2X==ballX && player2Y-1==ballY))
+                            break;
+
+                        if(track[player2X][player2Y-1]=='O')
+                        {
+                            track[player2X][player2Y]=underPlayer2;
+                            player2Y--;
+                            underPlayer2=underBall;
+                            track[player2X][player2Y]='<';
+                            ballY--;
+                            underBall=track[ballX][ballY];
+                            track[ballX][ballY]='O';
+                        }
+                        else
+                        {
+                            track[player2X][player2Y]=underPlayer2;
+                            player2Y--;
+                            underPlayer2=track[player2X][player2Y];
+                            track[player2X][player2Y]='<';
+                        }
+
+                        break;
+                    }
+
+                case '^':
+                    {
+                        if((player2Y==player1Y && player2X-1==player1X) ||(player2Y==player1Y && player2X-2==player1X && player2Y==ballY && player2X-1==ballX))
+                            break;
+
+                        if(track[player2X-1][player2Y]=='O')
+                        {
+                            track[player2X][player2Y]=underPlayer2;
+                            player2X--;
+                            underPlayer2=underBall;
+                            track[player2X][player2Y]='^';
+                            ballX--;
+                            underBall=track[ballX][ballY];
+                            track[ballX][ballY]='O';
+                        }
+                        else
+                        {
+                            track[player2X][player2Y]=underPlayer2;
+                            player2X--;
+                            underPlayer2=track[player2X][player2Y];
+                            track[player2X][player2Y]='^';
+                        }
+
+                        break;
+                    }
+
+                case 'v':
+                    {
+                        if((player2Y==player1Y && player2X+1==player1X) ||(player2Y==player1Y && player2X+2==player1X && player2Y==ballY && player2X+1==ballX))
+                            break;
+
+                        if(track[player2X+1][player2Y]=='O')
+                        {
+                            track[player2X][player2Y]=underPlayer2;
+                            player2X++;
+                            underPlayer2=underBall;
+                            track[player2X][player2Y]='v';
+                            ballX++;
+                            underBall=track[ballX][ballY];
+                            track[ballX][ballY]='O';
+                        }
+                        else
+                        {
+                            track[player2X][player2Y]=underPlayer2;
+                            player2X++;
+                            underPlayer2=track[player2X][player2Y];
+                            track[player2X][player2Y]='v';
+                        }
+
+                        break;
+                    }
+                }
+
+                break;
+            }
+
+        case 'k':
+            {
+                if(reverseAllowed==false)
+                    break;
+
+                switch(track[player2X][player2Y])
+                {
+                case '>':
+                    {
+                        if((player2X==player1X && player2Y-1==player1Y) ||(player2X==player1X && player2Y-2==player1Y && player2X==ballX && player2Y-1==ballY))
+                            break;
+
+                        if(track[player2X][player2Y-1]=='O')
+                        {
+                            track[player2X][player2Y]=underPlayer2;
+                            player2Y--;
+                            underPlayer2=underBall;
+                            track[player2X][player2Y]='>';
+                            ballY--;
+                            underBall=track[ballX][ballY];
+                            track[ballX][ballY]='O';
+                        }
+                        else
+                        {
+                            track[player2X][player2Y]=underPlayer2;
+                            player2Y--;
+                            underPlayer2=track[player2X][player2Y];
+                            track[player2X][player2Y]='>';
+                        }
+
+                        break;
+
+                    }
+
+
+                case '<':
+                    {
+                        if((player2X==player1X && player2Y+1==player1Y) ||(player2X==player1X && player2Y+2==player1Y && player2X==ballX && player2Y+1==ballY))
+                            break;
+
+                        if(track[player2X][player2Y+1]=='O')
+                        {
+                            track[player2X][player2Y]=underPlayer2;
+                            player2Y++;
+                            underPlayer2=underBall;
+                            track[player2X][player2Y]='<';
+                            ballY++;
+                            underBall=track[ballX][ballY];
+                            track[ballX][ballY]='O';
+                        }
+                        else
+                        {
+                            track[player2X][player2Y]=underPlayer2;
+                            player2Y++;
+                            underPlayer2=track[player2X][player2Y];
+                            track[player2X][player2Y]='<';
+                        }
+
+                        break;
+                    }
+
+                case '^':
+                    {
+                        if((player2Y==player1Y && player2X+1==player1X) ||(player2Y==player1Y && player2X+2==player1X && player2Y==ballY && player2X+1==ballX))
+                            break;
+
+                        if(track[player2X+1][player2Y]=='O')
+                        {
+                            track[player2X][player2Y]=underPlayer2;
+                            player2X++;
+                            underPlayer2=underBall;
+                            track[player2X][player2Y]='^';
+                            ballX++;
+                            underBall=track[ballX][ballY];
+                            track[ballX][ballY]='O';
+                        }
+                        else
+                        {
+                            track[player2X][player2Y]=underPlayer2;
+                            player2X++;
+                            underPlayer2=track[player2X][player2Y];
+                            track[player2X][player2Y]='^';
+                        }
+
+                        break;
+                    }
+
+                case 'v':
+                    {
+                        if((player2Y==player1Y && player2X-1==player1X) ||(player2Y==player1Y && player2X-2==player1X && player2Y==ballY && player2X-1==ballX))
+                            break;
+
+                        if(track[player2X-1][player2Y]=='O')
+                        {
+                            track[player2X][player2Y]=underPlayer2;
+                            player2X--;
+                            underPlayer2=underBall;
+                            track[player2X][player2Y]='v';
+                            ballX--;
+                            underBall=track[ballX][ballY];
+                            track[ballX][ballY]='O';
+                        }
+                        else
+                        {
+                            track[player2X][player2Y]=underPlayer2;
+                            player2X--;
+                            underPlayer2=track[player2X][player2Y];
+                            track[player2X][player2Y]='v';
+                        }
+
+
+                        break;
+                    }
+                }
+
+                break;
+            }
+
+        case 'j':
+            {
+                if(track[player2X][player2Y]=='^')
+                    track[player2X][player2Y]='<';
+
+                else if(track[player2X][player2Y]=='<')
+                    track[player2X][player2Y]='v';
+
+                else if(track[player2X][player2Y]=='v')
+                    track[player2X][player2Y]='>';
+
+                else if(track[player2X][player2Y]=='>')
+                    track[player2X][player2Y]='^';
+
+                break;
+            }
+
+        case 'l':
+            {
+                if(track[player2X][player2Y]=='^')
+                    track[player2X][player2Y]='>';
+
+                else if(track[player2X][player2Y]=='<')
+                    track[player2X][player2Y]='^';
+
+                else if(track[player2X][player2Y]=='v')
+                    track[player2X][player2Y]='<';
+
+                else if(track[player2X][player2Y]=='>')
+                    track[player2X][player2Y]='v';
+
+                break;
+            }
+
+        }
+
+        if(underBall==']')
+        {
+            ifstream in("rocketleague.in");
+            score1++;
+            in>>n>>m;
+            in>>player1X>>player1Y;
+            in>>player2X>>player2Y;
+            in>>ballX>>ballY;
+            in>>maxScore;
+            in>>noskipws;
+            in>>test;
+
+            for(i=0;i<n;i++)
+            {
+                for(j=0;j<m;j++)
+                    in>>track[i][j];
+                in>>test;
+            }
+
+            underPlayer1=track[player1X][player1Y];
+            underPlayer2=track[player2X][player2Y];
+            underBall=track[ballX][ballY];
+            track[player1X][player1Y]='>';
+            track[player2X][player2Y]='<';
+            track[ballX][ballY]='O';
+        }
+
+        else if(underBall=='[')
+        {
+            ifstream in("rocketleague.in");
+            score2++;
+            in>>n>>m;
+            in>>player1X>>player1Y;
+            in>>player2X>>player2Y;
+            in>>ballX>>ballY;
+            in>>maxScore;
+            in>>noskipws;
+            in>>test;
+
+            for(i=0;i<n;i++)
+            {
+                for(j=0;j<m;j++)
+                    in>>track[i][j];
+                in>>test;
+            }
+
+            underPlayer1=track[player1X][player1Y];
+            underPlayer2=track[player2X][player2Y];
+            underBall=track[ballX][ballY];
+            track[player1X][player1Y]='>';
+            track[player2X][player2Y]='<';
+            track[ballX][ballY]='O';
+        }
+
+        cout<<"SCORE(P1-P2): "<<score1<<" : "<<score2<<endl;
+        afisareTrack(track,n,m,player1X,player1Y,player2X,player2Y,ballX,ballY);
+    }
+
+    if(score1==maxScore)
+        cout<<"Player 1 Won!"<<endl;
+
+    if(score2==maxScore)
+        cout<<"Player 2 Won!"<<endl;
+
+    cout<<"Press X to exit!"<<endl;
+
+    while(test!='X' || test!='x')
+    {
+        test=getch();
+    }
+
+}
+
 
 ///----------------------------------------destructor----------------------------------------------------------
 ~RocketLeague()
@@ -1224,7 +1915,157 @@ public:
 
 int main()
 {
+int brench1,brench2,brench3;
 
+cout<<"Hello!";
+cout<<"Choose between our options-> 1) Playing Games  2) Creating your own Sports Betting House"<<endl;
+cin>>brench1;
+
+switch(brench1)
+{
+    case 1:
+        {
+            cout<<"What kind of sport do you want to use?"<<endl;
+            cout<<"1->Basic 2->Ball Sport 3->Racing Sport 4->Racing Ball Sport"<<endl;
+            cin>>brench2;
+
+            switch(brench2)
+            {
+                case 1:
+                    {
+                        cout<<"What kind of attributes do you want to use?"<<endl;
+                        cout<<"1->Default 2->Custom"<<endl;
+                        cin>>brench3;
+
+                        switch(brench3)
+                        {
+                            case 1:
+                            {
+                                Sports s;
+                                cout<<"Here is your sport:"<<endl;
+                                cout<<s;
+                                break;
+                            }
+
+                            case 2:
+                            {
+                                Sports s;
+                                cin>>s;
+                                cout<<"Here is your sport:"<<endl;
+                                cout<<s;
+                                break;
+                            }
+
+                        }
+
+                        break;
+                    }
+
+                case 2:
+                    {
+                        cout<<"What kind of attributes do you want to use?"<<endl;
+                        cout<<"1->Default 2->Custom"<<endl;
+                        cin>>brench3;
+
+                        switch(brench3)
+                        {
+                            case 1:
+                            {
+                                BallSport b;
+                                cout<<"Here is your sport:"<<endl;
+                                cout<<b;
+                                cout<<"Now let's play!!!"<<endl;
+                                b.football();
+                                break;
+                            }
+
+                            case 2:
+                            {
+                                BallSport b;
+                                cin>>b;
+                                cout<<"Here is your sport:"<<endl;
+                                cout<<b;
+                                cout<<"Now let's play!!!"<<endl;
+                                b.football();
+                                break;
+                            }
+
+                        }
+
+                        break;
+                    }
+
+                case 3:
+                    {
+                        cout<<"What kind of attributes do you want to use?"<<endl;
+                        cout<<"1->Default 2->Custom"<<endl;
+                        cin>>brench3;
+
+                        switch(brench3)
+                        {
+                            case 1:
+                            {
+                                RacingSport r;
+                                cout<<"Here is your sport:"<<endl;
+                                cout<<r;
+                                cout<<"Now let's play!!!"<<endl;
+                                r.race();
+                                break;
+                            }
+
+                            case 2:
+                            {
+                                RacingSport r;
+                                cin>>r;
+                                cout<<"Here is your sport:"<<endl;
+                                cout<<r;
+                                cout<<"Now let's play!!!"<<endl;
+                                r.race();
+                                break;
+                            }
+
+                        }
+
+                        break;
+                    }
+
+                case 4:
+                    {
+                        cout<<"What kind of attributes do you want to use?"<<endl;
+                        cout<<"1->Default 2->Custom"<<endl;
+                        cin>>brench3;
+
+                        switch(brench3)
+                        {
+                            case 1:
+                            {
+                                RocketLeague rl;
+                                cout<<"Here is your sport:"<<endl;
+                                cout<<rl;
+                                cout<<"Now let's play!!!"<<endl;
+                                rl.RL();
+                                break;
+                            }
+
+                            case 2:
+                            {
+                                RocketLeague rl;
+                                cin>>rl;
+                                cout<<"Here is your sport:"<<endl;
+                                cout<<rl;
+                                cout<<"Now let's play!!!"<<endl;
+                                rl.RL();
+                                break;
+                            }
+
+                        }
+                        break;
+                    }
+                break;
+            }
+        break;
+    }
+}
 
     return 0;
 
