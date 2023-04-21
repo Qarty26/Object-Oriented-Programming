@@ -1032,6 +1032,7 @@ public:
 void setReverseAllowed(bool reverseAllowed)
 {
     this->reverseAllowed=reverseAllowed;
+    cout<<"IN!!!!!!!!!!!!!!!!!"<<endl;
 }
 
 ///-------------------------Constructors-------------------------------------------------------------------------------------------------
@@ -1771,17 +1772,36 @@ void RL()
     }
 
     if(score1==maxScore)
-        cout<<"Player 1 Won!"<<endl;
-
-    if(score2==maxScore)
-        cout<<"Player 2 Won!"<<endl;
-
-    cout<<"Press X to exit!"<<endl;
-
-    while(test!='X' || test!='x')
     {
-        test=getch();
+        cout<<"Player 1 Won!"<<endl;
+        cout<<"Press X to exit!"<<endl;
+       while(test=getch())
+       {
+           if(test=='X' || test=='x')
+            break;
+        }
+        score1=0;
+        score2=0;
     }
+
+
+    else if(score2==maxScore)
+    {
+        cout<<"Player 2 Won!"<<endl;
+        cout<<"Press X to exit!"<<endl;
+       while(test=getch())
+       {
+           if(test=='X' || test=='x')
+            break;
+        }
+        score1=0;
+        score2=0;
+    }
+
+
+
+
+
 
 }
 
@@ -1893,6 +1913,7 @@ public:
 
     void addGame()
     {
+        bool ok=0;
         int id_choice;
         cout<<"Choose the sport by id:"<<endl;
         cin>>id_choice;
@@ -1901,8 +1922,12 @@ public:
             if(listofSports[i].GetSport()->GetId()==id_choice)
             {
                 games.push_back(listofSports[i].GetSport());
+                ok=1;
                 break;
             }
+        if(ok==1)
+            cout<<"Game added successfully!"<<endl;
+        else cout<<"Couldn't find the game..."<<endl;
     }
 
     void showGame()
@@ -1916,6 +1941,7 @@ public:
 int main()
 {
 int brench1,brench2,brench3;
+int choice;
 
 cout<<"Hello!";
 cout<<"Choose between our options-> 1) Playing Games  2) Creating your own Sports Betting House"<<endl;
@@ -2042,7 +2068,11 @@ switch(brench1)
                                 RocketLeague rl;
                                 cout<<"Here is your sport:"<<endl;
                                 cout<<rl;
-                                cout<<"Now let's play!!!"<<endl;
+                                cout<<endl<<"Now let's play Football with cars(Kinda RocketLeague Vaslui version)!!!"<<endl;
+                                cout<<"Do you want to enable reverse? By default it is disabled.(0/1)"<<endl;
+                                cin>>choice;
+                                if(choice==1)
+                                    rl.setReverseAllowed(true);
                                 rl.RL();
                                 break;
                             }
@@ -2053,7 +2083,7 @@ switch(brench1)
                                 cin>>rl;
                                 cout<<"Here is your sport:"<<endl;
                                 cout<<rl;
-                                cout<<"Now let's play!!!"<<endl;
+                                cout<<endl<<"Now let's play Football with cars(Kinda RocketLeague Vaslui version)!!!"<<endl;
                                 rl.RL();
                                 break;
                             }
@@ -2063,6 +2093,58 @@ switch(brench1)
                     }
                 break;
             }
+        break;
+    }
+
+    case 2:
+    {
+        BettingHouse b;
+        brench2=1;
+        while(brench2!=0)
+        {
+            cout<<"What do you want to do?"<<endl;
+            cout<<"1->Create a sport\n2->Add sport to the betting house\n3->Show all the created sports\n4->Show all the sports in the betting house\n5->Leave"<<endl;
+            cin>>brench2;
+
+            switch(brench2)
+            {
+            case 1:
+                {
+                    system("CLS");
+                    b.addList();
+                    cout<<"Sport added"<<endl;
+                    break;
+                }
+            case 2:
+                {
+                    system("CLS");
+                    b.showList();
+                    cout<<endl;
+                    b.addGame();
+
+                    break;
+                }
+            case 3:
+                {
+                    system("CLS");
+                    b.showList();
+                    break;
+                }
+            case 4:
+                {
+                    system("CLS");
+                    b.showGame();
+                    break;
+                }
+            case 5:
+                {
+                    system("CLS");
+                    brench2=0;
+                    break;
+                }
+            }
+        }
+
         break;
     }
 }
